@@ -29,11 +29,7 @@ def safe(report):
 
 
 # part 1
-count = 0
-for _ in filter(safe, reports):
-    count += 1
-
-print(count)
+print(len(tuple(filter(safe, reports))))
 
 # part 2
 count = 0
@@ -42,13 +38,9 @@ for report in reports:
         count += 1
         continue
 
-    any_safe = False
-    for i in range(len(report)):  # remove all single levels
+    for i in range(len(report)):
         if safe(report[:i] + report[i+1:]):
-            any_safe = True
+            count += 1
             break
-    
-    if any_safe:
-        count += 1
 
 print(count)
