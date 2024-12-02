@@ -20,27 +20,21 @@ def safe(report):
         return False
     
     for level, next_level in zip(report, report[1:]):
-        if abs(next_level - level) <= 3 and next_level != level:
-            continue
-        else:
+        if not (abs(next_level - level) <= 3 and next_level != level):
             return False
     
     return True
 
 
 # part 1
-print(len(tuple(filter(safe, reports))))
+safe_count = len(tuple(filter(safe, reports)))
+print(safe_count)
 
 # part 2
-count = 0
-for report in reports:
-    if safe(report):
-        count += 1
-        continue
-
+for report in filter(lambda r: not safe(r), reports):
     for i in range(len(report)):
         if safe(report[:i] + report[i+1:]):
-            count += 1
+            safe_count += 1
             break
 
-print(count)
+print(safe_count)
