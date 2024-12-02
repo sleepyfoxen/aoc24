@@ -11,31 +11,26 @@ for line in data:
 
 def safe(report):
     # two conditions:
-    # - sequence is strictly monotonic
     # - consecutive elements differ by at most 3
+    # - sequence is strictly monotonic
 
-    if report not in (sorted(report), sorted(report, reverse=True)):
-        return False
-    
     for level, next_level in zip(report, report[1:]):
         if not 0 < abs(next_level - level) <= 3:
             return False
-    
-    return True
+
+    return report in (sorted(report), sorted(report, reverse=True))
 
 
 unsafe_reports, safe_reports = [], []
 for report in reports:
     (unsafe_reports, safe_reports)[safe(report)].append(report)
 
-# part 1
+# part 1 - how many reports meet the safety condition?
 print(len(safe_reports))
 
-# part 2
+# part 2 - how many meet the safety condition with one element removed?
 for report in unsafe_reports:
-    for i in range(len(report)):
-        if safe(report[:i] + report[i+1:]):  # try with each character removed
-            safe_reports.append(report)
-            break
+    if any(safe(report[:i] + report[i+1:]) for i in range(len(report))):
+        safe_reports.append(report)
 
 print(len(safe_reports))
