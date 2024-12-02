@@ -9,7 +9,7 @@ for line in data:
     reports.append(levels)
 
 
-def safe(report):
+def safe(report: list[int]) -> bool:
     # two conditions:
     # - consecutive elements differ by at most 3
     # - sequence is strictly monotonic
@@ -18,9 +18,10 @@ def safe(report):
         if not 0 < abs(next_level - level) <= 3:
             return False
 
-    return report in (sorted(report), sorted(report, reverse=True))
+    return sorted(report) in (report, report[::-1])
 
 
+# partition
 unsafe_reports, safe_reports = [], []
 for report in reports:
     (unsafe_reports, safe_reports)[safe(report)].append(report)
