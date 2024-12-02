@@ -14,27 +14,28 @@ def safe(report):
     # - sequence is strictly monotonic
     # - consecutive elements differ by at most 3
 
-    ordered_report = sorted(report)
-
-    if not (report == ordered_report or report == ordered_report[::-1]):
+    if report not in (sorted(report), sorted(report, reverse=True)):
         return False
     
     for level, next_level in zip(report, report[1:]):
-        if not (abs(next_level - level) <= 3 and next_level != level):
+        if not 0 < abs(next_level - level) <= 3:
             return False
     
     return True
 
 
+unsafe_reports, safe_reports = [], []
+for report in reports:
+    (unsafe_reports, safe_reports)[safe(report)].append(report)
+
 # part 1
-safe_count = len(tuple(filter(safe, reports)))
-print(safe_count)
+print(len(safe_reports))
 
 # part 2
-for report in filter(lambda r: not safe(r), reports):
+for report in unsafe_reports:
     for i in range(len(report)):
-        if safe(report[:i] + report[i+1:]):
-            safe_count += 1
+        if safe(report[:i] + report[i+1:]):  # try with each character removed
+            safe_reports.append(report)
             break
 
-print(safe_count)
+print(len(safe_reports))
