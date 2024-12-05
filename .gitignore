@@ -1,0 +1,7 @@
+# byte-compiled python
+__pycache__/
+*.pyc
+
+# editor temp files
+*~
+\#*\#
