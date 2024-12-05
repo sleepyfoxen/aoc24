@@ -6,19 +6,17 @@ pairs = [ tuple(rule.split('|')) for rule in rules ]
 # pairs are like (47, 53) meaning 47 must appear before 53
 
 def check(pages, pairs=pairs):
-    for i, page in enumerate(pages):
-        for lhs, rhs in pairs:
-            if page in rhs and lhs in pages:
-                if pages.index(lhs) > i:
-                    return False
+    for lhs, rhs in pairs:
+        for i, page in enumerate(pages):
+            if page in rhs and lhs in pages and pages.index(lhs) > i:
+                return False
 
     return True
 
-corrects, incorrects = [], []
+incorrects, corrects = [], []
 for update in updates:
     pages = update.split(',')
-    if check(pages): corrects.append(pages)
-    else: incorrects.append(pages)
+    (incorrects, corrects)[check(pages)].append(pages)
 
 total = sum(int(c[len(c)//2]) for c in corrects)
 print(total)
