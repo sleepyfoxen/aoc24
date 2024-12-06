@@ -1,13 +1,10 @@
+from collections import defaultdict
 
 with open('input', 'r') as f:
     data = f.read().strip().splitlines()
 
 indicators = '^>v<'
-guard = ()
-direction = None
-
-grid = (len(data), len(data[0]))
-print(grid)
+rows, cols = len(data), len(data[0])
 
 # guard starting location
 for row, line in enumerate(data):
@@ -15,73 +12,61 @@ for row, line in enumerate(data):
         if character in indicators:
             guard = (row, col)
             direction = indicators.index(character)
+            start = (guard, direction)
+            break
 
-start = (guard, direction)
 
-visited = set()
+path = set()
 while True:
-
-    visited.add(guard)
-
+    path.add(guard)
     match direction:
-        case 0: next_tile = (guard[0] - 1, guard[1])
-        case 1: next_tile = (guard[0], guard[1] + 1)
-        case 2: next_tile = (guard[0] + 1, guard[1])
-        case 3: next_tile = (guard[0], guard[1] - 1)
-    
-    try:
-        print(direction, next_tile, data[next_tile[0]][next_tile[1]])
-    except IndexError:
+        case 0: next_row, next_col = (guard[0] - 1, guard[1])
+        case 1: next_row, next_col = (guard[0], guard[1] + 1)
+        case 2: next_row, next_col = (guard[0] + 1, guard[1])
+        case 3: next_row, next_col = (guard[0], guard[1] - 1)
+
+    if next_row not in range(rows) or next_col not in range(cols):
         break
 
-    match data[next_tile[0]][next_tile[1]]:
+    match data[next_row][next_col]:
         case '#':
             direction += 1
             direction %= 4
         case _:
-            guard = next_tile
+            guard = next_row, next_col
 
-print(len(visited))
-print()
-print()
+print(len(path))
 
-# raise
 
-obstacles = set()
-for (row, col) in visited:
+count = 0
+for (row, col) in path:
     guard, direction = start
-    visited_ = set()
+    visited = defaultdict(set)
 
     while True:
-        if (guard, direction) in visited_:
-            obstacles.add((row, col))
+        if guard in visited[direction]:
+            count += 1
             break
 
-        visited_.add((guard, direction))
-
+        visited[direction].add(guard)
         match direction:
-            case 0: next_tile = (guard[0] - 1, guard[1])
-            case 1: next_tile = (guard[0], guard[1] + 1)
-            case 2: next_tile = (guard[0] + 1, guard[1])
-            case 3: next_tile = (guard[0], guard[1] - 1)
-        
-        if next_tile[0] < 0 or next_tile[1] < 0:
+            case 0: next_row, next_col = (guard[0] - 1, guard[1])
+            case 1: next_row, next_col = (guard[0], guard[1] + 1)
+            case 2: next_row, next_col = (guard[0] + 1, guard[1])
+            case 3: next_row, next_col = (guard[0], guard[1] - 1)
+
+        if next_row < 0 or next_row >= rows or next_col < 0 or next_col >= cols:
             break
 
-        try:
-            next_tile_data = data[next_tile[0]][next_tile[1]]
-        except IndexError:
-            break
+        next_tile = data[next_row][next_col]
+        if (next_row, next_col) == (row, col) and not (row, col) == start[0]:
+             next_tile = '#'
 
-        if next_tile == (row, col):
-            if not (row, col) == start[0]:
-                next_tile_data = '#'
-
-        match next_tile_data:
+        match next_tile:
             case '#':
                 direction += 1
                 direction %= 4
             case _:
-                guard = next_tile
+                guard = next_row, next_col
 
-print(obstacles, len(obstacles))  # 2292 is too high
+print(count)
